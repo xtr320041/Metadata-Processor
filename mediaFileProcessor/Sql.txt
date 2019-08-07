@@ -1,0 +1,214 @@
+﻿CREATE TABLE [dbo].[_MetaCollection](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[FilePath] [nvarchar](400) NOT NULL,
+	[MetaData] [nvarchar](max) NULL,
+ CONSTRAINT [PK__MetaCollection] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Index [NonClusteredIndex-20190802-155440]    Script Date: 2/08/2019 3:55:08 p.m. ******/
+CREATE UNIQUE NONCLUSTERED INDEX [NonClusteredIndex-20190802-155440] ON [dbo].[_MetaCollection]
+(
+	[FilePath] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE PROCEDURE _meta_insert
+	-- Add the parameters for the stored procedure here
+	@file nvarchar(400), 
+	@metaData nvarchar(max)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+insert into dbo._MetaCollection (FilePath, MetaData) values (@file, @metaData)
+
+END
+GO
+
+ALTER PROCEDURE _meta_insert
+	-- Add the parameters for the stored procedure here
+	@file nvarchar(400), 
+	@metaData nvarchar(max)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+if not exists (select * from dbo._MetaCollection where FilePath = @file)
+begin
+	insert into dbo._MetaCollection (FilePath, MetaData) values (@file, @metaData)
+end
+else
+begin
+	update dbo._MetaCollection set  MetaData = @metaData where FilePath = @file
+end
+
+END
+GO
+
+CREATE TABLE [dbo].[_ValueCollection](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[KeyName] [nvarchar](200) NOT NULL,
+	[MetaValue] [nvarchar](3000) NULL,
+ CONSTRAINT [PK__ValueCollection] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/****** Object:  Index [NonClusteredIndex-20190802-155440]    Script Date: 2/08/2019 3:55:08 p.m. ******/
+CREATE NONCLUSTERED INDEX [NonClusteredIndex-keyCollection] ON [dbo].[_ValueCollection]
+(
+	[KeyName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+
+CREATE PROCEDURE _value_insert
+	-- Add the parameters for the stored procedure here
+	@key nvarchar(200), 
+	@value nvarchar(3000)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+insert into dbo._ValueCollection (KeyName, MetaValue) values (@key, @value)
+
+END
+GO
+
+ALTER TABLE  [dbo].[_ValueCollection] ADD metaId int NULL
+go
+
+Create PROCEDURE _meta_delete
+	-- Add the parameters for the stored procedure here
+	@file nvarchar(400)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+declare @metaId int
+if exists (select * from dbo._MetaCollection where FilePath = @file)
+begin
+	set @metaId = (select top 1 id from dbo._MetaCollection where FilePath = @file)
+	delete from [dbo].[_ValueCollection] where [metaId] = @metaId
+	delete from dbo._MetaCollection where FilePath = @file
+end
+END
+GO
+
+ALTER PROCEDURE [dbo].[_value_insert]
+	-- Add the parameters for the stored procedure here
+	@key nvarchar(200), 
+	@value nvarchar(3000)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+declare @metaId int
+set @metaId = (select max(id) from [dbo].[_MetaCollection])
+insert into dbo._ValueCollection (KeyName, MetaValue, metaId) values (@key, @value, @metaId)
+
+END
+go
+
+Alter PROCEDURE _meta_delete
+	-- Add the parameters for the stored procedure here
+	@file nvarchar(400)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+declare @metaId int
+declare @minId int
+declare @maxId int
+if exists (select * from dbo._MetaCollection where FilePath = @file)
+begin
+	set @metaId = (select top 1 id from dbo._MetaCollection where FilePath = @file)
+	
+	set @minId = (select top 1 Id from [_ValueCollection] where metaId = @metaId and keyName = 'File Name')
+	set @maxId = (select top 1 Id from [_ValueCollection] where metaId = (@metaId + 1) and keyName = 'File Name')
+	if (@maxId is null)
+	begin
+		set @maxId = isnull((select min(Id) from [_ValueCollection] where metaId > @metaId and keyName = 'File Name'), 999999999)
+	end
+
+	delete from [dbo].[_ValueCollection] where id >= @minId and id <= @maxId
+	delete from dbo._MetaCollection where FilePath = @file
+end
+END
+GO
+select KeyName, Metavalue, count(*) as [Count] into _ValueList from _valueCollection group by keyname, Metavalue order by 1, 2, 3 desc
+go
+CREATE FUNCTION getValueList 
+(
+	-- Add the parameters for the function here
+	@keyName nvarchar(200)
+)
+RETURNS nvarchar(max)
+AS
+BEGIN
+	Declare @val nvarchar(MAX); 
+	Select @val = COALESCE(@val + ', ' + MetaValue, MetaValue) 
+        From _ValueList
+		where KeyName = @KeyName
+		order by [Count] desc
+		
+	return @val;
+
+END
+GO
+
+Create PROCEDURE [dbo].[_MetaSearch]
+	-- Add the parameters for the stored procedure here
+	@key1 nvarchar(200), 
+	@value1 nvarchar(300),
+	@key2 nvarchar(200), 
+	@value2 nvarchar(300),
+	@andOr varchar(5)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+declare @metaId int
+set @metaId = (select max(id) from [dbo].[_MetaCollection])
+-- insert into dbo._ValueCollection (KeyName, MetaValue, metaId) values (@key1, @value1, @metaId)
+select top 1 * from _MetaCollection
+END
+go
+
+ALTER PROCEDURE [dbo].[_MetaSearch]
+	-- Add the parameters for the stored procedure here
+	@key1 nvarchar(200), 
+	@value1 nvarchar(300),
+	@key2 nvarchar(200), 
+	@value2 nvarchar(300),
+	@andOr varchar(5)
+AS
+BEGIN
+	set @value1 = '%' + @value1 + '%'
+	set @value2 = '%' + @value2 + '%'
+	if @key2 = ''
+	begin		
+		select distinct m1.* from [dbo].[_ValueCollection] v1 join [dbo].[_MetaCollection] m1 on v1.metaId = m1.id and v1.KEYNAME = @key1 and v1.MetaValue like @value1  order by 2
+	end
+	else
+	begin
+		if @andOr = 'and'
+		begin
+			select distinct m1.* from [dbo].[_MetaCollection] m1 where exists (select * from  [dbo].[_ValueCollection] v1 where v1.KEYNAME = @key1 and v1.MetaValue like @value1 and v1.metaId = m1.Id)
+				and exists (select * from  [dbo].[_ValueCollection] v2 where v2.KEYNAME = @key2 and v2.MetaValue like @value2  and v2.metaId = m1.Id)			
+			order by 2
+		end
+		else
+		begin
+			select distinct m1.* from [dbo].[_MetaCollection] m1 where exists (select * from  [dbo].[_ValueCollection] v1 where v1.KEYNAME = @key1 and v1.MetaValue like @value1 and v1.metaId = m1.Id)
+				or exists (select * from  [dbo].[_ValueCollection] v2 where v2.KEYNAME = @key2 and v2.MetaValue like @value2  and v2.metaId = m1.Id)			
+			order by 2
+		end
+	end
+END
+go

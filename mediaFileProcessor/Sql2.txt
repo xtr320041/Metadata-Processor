@@ -1,0 +1,26 @@
+﻿--select  
+--*,
+--(select MetaValue from [_ValueCollection] v2 where v2.id = v.id + 1) + '/' + MetaValue as [FilePath]
+--into t1
+--from [dbo].[_ValueCollection] v
+
+--where keyName = 'File Name' --or keyName = 'Directory'
+
+--update t1
+--set FilePath = replace(FilePath, '\\', '\')
+
+update t1 
+set t1.metaId = m.Id
+from t1 join [dbo].[_MetaCollection] m
+ on m.FilePath = t1.FilePath
+--where t1.FilePath is null
+
+update v
+set v.metaId = t1.MetaId
+from _ValueCollection v
+join t1 on v.Id = t1.Id
+
+update v1
+set v1.metaId = (select max(metaId) from _ValueCollection v2 where v2.keyName = 'File Name' and v2.id < v1.id)
+from _ValueCollection v1
+where v1.keyName <> 'File Name'
