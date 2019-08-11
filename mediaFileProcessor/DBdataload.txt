@@ -1,0 +1,15 @@
+﻿SET IDENTITY_INSERT [dbo].[_MetaCollection] ON
+
+insert into [dbo].[_MetaCollection] (Id, FilePath, MetaData)
+select Id, FilePath, MetaData from [dbo].[_MetaCollectionData]
+
+SET IDENTITY_INSERT [dbo].[_MetaCollection] OFF
+
+
+
+SET IDENTITY_INSERT [dbo].[_ValueCollection] ON
+
+insert into [dbo].[_ValueCollection] (Id, KeyName, MetaValue, MetaId)
+select Id, KeyName, MetaValue, MetaId from [dbo].[_ValueCollectionData]
+
+SET IDENTITY_INSERT [dbo].[_ValueCollection] OFF

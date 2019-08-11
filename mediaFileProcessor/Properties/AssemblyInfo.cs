@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Metadata Processor")]
+[assembly: AssemblyTitle("Metadata Processor Analyzer")]
 [assembly: AssemblyDescription("The application provides functions for extracting metadata from file system, saving them into database and searching the metadata in the database.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Department of Conservation")]
-[assembly: AssemblyProduct("Metadata Processor")]
+[assembly: AssemblyProduct("Metadata Processor Analyzer")]
 [assembly: AssemblyCopyright("Copyright ©  2019  Department of Conservation (DOC)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

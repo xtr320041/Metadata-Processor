@@ -16,11 +16,12 @@ namespace mediaFileProcessor
     {
         List<ValuePair> valueList = null;
         List<ValuePair> fileList = null;
+        List<ValuePair> fileSummaryList = null;
         public Form3()
         {
             InitializeComponent();
             valueList = new List<ValuePair>();
-            string connectionString = mediaFileProcessor.Properties.Settings.Default.dbString;
+            string connectionString = Util.GetDBcnn();
             List<string> files = new List<string>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -41,7 +42,29 @@ namespace mediaFileProcessor
                 field2Cbo.Items.Add(valueList[i].Key);
             }
 
+            fileSummaryList = new List<ValuePair>();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("select distinct [FilePath], Id from [dbo].[_MetaCollection] order by 1", conn);
+                cmd.CommandType = System.Data.CommandType.Text;
+                SqlDataReader rd = cmd.ExecuteReader();
+                while (rd.Read())
+                {
+                    fileSummaryList.Add(new ValuePair(rd.GetInt32(1).ToString(), rd.GetString(0)));
+                }
+            }
+            for (int i = 0; i < fileSummaryList.Count; i++)
+            {
+                fileSmryLst.Items.Add(fileSummaryList[i].Value);
+            }
+            setSummaryLbl();
 
+        }
+
+        private void setSummaryLbl()
+        {
+            fileSmryLbl.Text = fileSmryLst.Items.Count + " files in total. Double click on a file to see its metadata.";
         }
 
         private void closeBtn_Click(object sender, EventArgs e)
@@ -162,44 +185,19 @@ namespace mediaFileProcessor
 
             if ((v1 == "") && (v2 == "") && (vf1 == "") && (vf2 == ""))
             {
-                MessageBox.Show("Must enter some value in the selection filters.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("Must enter some selection filters.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
 
             if ((orAnd ==  "or") && (((v1 == "") && (vf1 == "")) || ((v2 == "") && (vf2 == ""))))
             {
-                MessageBox.Show("Must enter some value in the selection filters with OR condition.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show("Must enter some selection filters with OR condition.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
 
-            //if ((v1=="") && (v2== ""))
-            //{
-            //    MessageBox.Show("Must enter some value in the selection filters", "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-            //    return;
-            //}
-
-            //if ((vf1.Length > 0) && (v1 == ""))
-            //{
-            //    MessageBox.Show("Must select a metadata field name for the selection filter: " + vf1, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-            //    return;
-            //}
-
-            //if ((vf2.Length > 0) && (v2 == ""))
-            //{
-            //    MessageBox.Show("Must select a metadata field name for the selection filter: " + vf2, "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-            //    return;
-            //}
-
-            //if ((v1 == "") && (v2.Length > 0))
-            //{
-            //    vf1 = vf2;
-            //    v1 = v2;
-            //    vf2 = "";
-            //}
-
             //MessageBox.Show("Please wait while searching the database.", "Confirmation", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Cursor.Current = Cursors.WaitCursor;
-            string connectionString = mediaFileProcessor.Properties.Settings.Default.dbString;
+            string connectionString = Util.GetDBcnn();
             fileList = new List<ValuePair>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -311,6 +309,84 @@ namespace mediaFileProcessor
             if (e.KeyChar == (char)Keys.Return)
             {
                 searchBtn_Click(sender, null);
+            }
+        }
+
+        private void fileSumrySetBtn_Click(object sender, EventArgs e)
+        {
+            fileSumryTxt.Text = fileSumryTxt.Text.Trim();
+            if (fileSumryTxt.Text.Length > 0)
+            {
+                string filter = fileSumryTxt.Text.ToLower();
+                fileSmryLst.Items.Clear();
+                for (int i = 0; i < fileSummaryList.Count; i++)
+                {
+                    if (fileSummaryList[i].Value.ToLower().Contains(filter))
+                        fileSmryLst.Items.Add(fileSummaryList[i].Value);
+                }
+            }
+            else
+            {
+                fileSmryLst.Items.Clear();
+                for (int i = 0; i < fileSummaryList.Count; i++) { 
+                        fileSmryLst.Items.Add(fileSummaryList[i].Value);
+                }
+            }
+            setSummaryLbl();
+        }
+
+        private void fileSumryTxt_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                fileSumrySetBtn_Click(sender, null);
+            }
+        }
+
+        private void fileSmryLst_DoubleClick(object sender, EventArgs e)
+        {
+            try
+            {
+                if (fileSmryLst.SelectedItem != null)
+                {
+                    //string filePath = fileLst.SelectedItem.ToString();
+                    //string output = Util.GetMeta(filePath);
+                    int i = fileSmryLst.SelectedIndex;
+                    string fileKey = fileSmryLst.Items[i].ToString();
+                    int fileId = 0;
+                    for (int j = 0; j < fileSummaryList.Count; j++)
+                    {
+                        if (fileKey == fileSummaryList[j].Value)
+                        {
+                            fileId = int.Parse(fileSummaryList[j].Key);
+                            break;
+                        }
+                    }
+                    string connectionString = Util.GetDBcnn();
+                    string metaValue = "";
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+                        SqlCommand cmd = new SqlCommand("select * from _MetaCollection where Id = " + fileId.ToString(), conn);
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        SqlDataReader rd = cmd.ExecuteReader();
+                        while (rd.Read())
+                        {
+                            metaValue = rd.GetString(2);
+                        }
+                    }
+
+                    Form2 metaDialog = new Form2();
+                    string nt = Util.getXml3(metaValue);
+                    metaDialog.setText(nt);
+                    metaDialog.setFocus();
+                    metaDialog.ShowDialog();
+                    metaDialog.Dispose();
+                }
+            }
+            catch (Exception err)
+            {
+                MessageBox.Show(err.Message);
             }
         }
     }

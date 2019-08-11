@@ -24,11 +24,11 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://deviis4/AppDeployment/Metadata/</InstallUrl>
-    <ProductName>Metadata Processor and Search Tool</ProductName>
+    <ProductName>Metadata Processor and Analyzer</ProductName>
     <PublisherName>Department of Conservation</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>12</ApplicationRevision>
+    <ApplicationRevision>13</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -154,6 +154,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DBdataload.txt" />
+    <Content Include="DBinitial.txt" />
     <Content Include="exiftool.exe" />
     <Content Include="file3.ico" />
     <Content Include="Sql2.txt" />

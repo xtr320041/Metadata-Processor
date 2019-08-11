@@ -3,7 +3,10 @@
   <Profiles />
   <Settings>
     <Setting Name="dbString" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Data Source=WIN-DUULHMRSRIN;Initial Catalog=MediaFileDB;Integrated Security=SSPI</Value>
+      <Value Profile="(Default)">Data Source=devsql6;Initial Catalog=DMmetadata;Integrated Security=SSPI</Value>
+    </Setting>
+    <Setting Name="dbStringDebug" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Data Source=WIN-DUULHMRSRIN;Initial Catalog=MediafileDB;Integrated Security=SSPI</Value>
     </Setting>
   </Settings>
 </SettingsFile>

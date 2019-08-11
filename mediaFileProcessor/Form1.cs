@@ -114,7 +114,7 @@ namespace mediaFileProcessor
         private void saveDbBtn_Click(object sender, EventArgs e)
         {
             Util.LogErr("Start saving DB from: " + folderTxt.Text);
-            string connectionString = mediaFileProcessor.Properties.Settings.Default.dbString;
+            string connectionString = Util.GetDBcnn();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
@@ -149,7 +149,7 @@ namespace mediaFileProcessor
 
         private void CleanListBtn_Click(object sender, EventArgs e)
         {
-            string connectionString = mediaFileProcessor.Properties.Settings.Default.dbString;
+            string connectionString = Util.GetDBcnn();
             List<string> files = new List<string>();
             using (SqlConnection conn = new SqlConnection(connectionString))
             {
@@ -180,7 +180,7 @@ namespace mediaFileProcessor
             DialogResult dialogResult = MessageBox.Show("Are you sure to delete metadata stored in the database for these files?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (dialogResult == DialogResult.Yes)
             {
-                string connectionString = mediaFileProcessor.Properties.Settings.Default.dbString;
+                string connectionString = Util.GetDBcnn();
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();

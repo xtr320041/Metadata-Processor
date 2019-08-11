@@ -50,9 +50,9 @@
             this.startBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.startBtn.Location = new System.Drawing.Point(682, 7);
             this.startBtn.Name = "startBtn";
-            this.startBtn.Size = new System.Drawing.Size(44, 23);
+            this.startBtn.Size = new System.Drawing.Size(50, 23);
             this.startBtn.TabIndex = 2;
-            this.startBtn.Text = "Show";
+            this.startBtn.Text = "Display";
             this.myToolTip.SetToolTip(this.startBtn, "Display files in the selected folder.");
             this.startBtn.UseVisualStyleBackColor = true;
             this.startBtn.Click += new System.EventHandler(this.button1_Click);
@@ -109,11 +109,11 @@
             // saveDbBtn
             // 
             this.saveDbBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.saveDbBtn.Location = new System.Drawing.Point(782, 6);
+            this.saveDbBtn.Location = new System.Drawing.Point(828, 6);
             this.saveDbBtn.Name = "saveDbBtn";
-            this.saveDbBtn.Size = new System.Drawing.Size(103, 24);
+            this.saveDbBtn.Size = new System.Drawing.Size(57, 24);
             this.saveDbBtn.TabIndex = 5;
-            this.saveDbBtn.Text = "Save Metadata";
+            this.saveDbBtn.Text = "Save";
             this.myToolTip.SetToolTip(this.saveDbBtn, "Extract and save metadata into the database for the files in the list.");
             this.saveDbBtn.UseVisualStyleBackColor = true;
             this.saveDbBtn.Click += new System.EventHandler(this.saveDbBtn_Click);
@@ -125,9 +125,10 @@
             this.CleanListBtn.Name = "CleanListBtn";
             this.CleanListBtn.Size = new System.Drawing.Size(80, 23);
             this.CleanListBtn.TabIndex = 6;
-            this.CleanListBtn.Text = "Clean List";
+            this.CleanListBtn.Text = "Check";
             this.CleanListBtn.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.myToolTip.SetToolTip(this.CleanListBtn, "Remove files with metadata already stored in the database from the list.");
+            this.myToolTip.SetToolTip(this.CleanListBtn, "Check the current file list and remove those with metadata already stored in the " +
+        "database.");
             this.CleanListBtn.UseVisualStyleBackColor = true;
             this.CleanListBtn.Click += new System.EventHandler(this.CleanListBtn_Click);
             // 
@@ -138,8 +139,8 @@
             this.cleanDbBtn.Name = "cleanDbBtn";
             this.cleanDbBtn.Size = new System.Drawing.Size(80, 23);
             this.cleanDbBtn.TabIndex = 7;
-            this.cleanDbBtn.Text = "Clean DB";
-            this.myToolTip.SetToolTip(this.cleanDbBtn, "Remove metadata stored in the database for the files in the list.");
+            this.cleanDbBtn.Text = "Delete";
+            this.myToolTip.SetToolTip(this.cleanDbBtn, "Delete metadata stored in the database for the files in the list.");
             this.cleanDbBtn.UseVisualStyleBackColor = true;
             this.cleanDbBtn.Click += new System.EventHandler(this.cleanDbBtn_Click);
             // 
@@ -162,14 +163,16 @@
             // searchBtn
             // 
             this.searchBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.searchBtn.BackColor = System.Drawing.Color.PaleTurquoise;
-            this.searchBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.searchBtn.Location = new System.Drawing.Point(322, 600);
+            this.searchBtn.BackColor = System.Drawing.SystemColors.Control;
+            this.searchBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.searchBtn.ForeColor = System.Drawing.Color.Navy;
+            this.searchBtn.Location = new System.Drawing.Point(537, 600);
             this.searchBtn.Name = "searchBtn";
-            this.searchBtn.Size = new System.Drawing.Size(376, 23);
+            this.searchBtn.Size = new System.Drawing.Size(161, 23);
             this.searchBtn.TabIndex = 9;
-            this.searchBtn.Text = "Search Metadata Database";
-            this.myToolTip.SetToolTip(this.searchBtn, "Search metadata in the database extracted from files.");
+            this.searchBtn.Text = "Search";
+            this.myToolTip.SetToolTip(this.searchBtn, "Search metadata in the database that have extracted and saved previously from the" +
+        " file system.");
             this.searchBtn.UseVisualStyleBackColor = false;
             this.searchBtn.Click += new System.EventHandler(this.searchBtn_Click);
             // 

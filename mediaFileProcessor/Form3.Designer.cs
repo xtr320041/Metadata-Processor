@@ -57,6 +57,12 @@
             this.valueLtv = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.fileSmryLbl = new System.Windows.Forms.Label();
+            this.fileSmryLst = new System.Windows.Forms.ListBox();
+            this.fileSumrySetBtn = new System.Windows.Forms.Button();
+            this.label6 = new System.Windows.Forms.Label();
+            this.fileSumryTxt = new System.Windows.Forms.TextBox();
             this.closeBtn = new System.Windows.Forms.Button();
             this.myTimer1 = new System.Windows.Forms.Timer(this.components);
             this.myToolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -64,6 +70,7 @@
             this.tabPage2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -73,10 +80,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1129, 716);
+            this.tabControl1.Size = new System.Drawing.Size(1114, 529);
             this.tabControl1.TabIndex = 0;
             // 
             // tabPage2
@@ -100,16 +108,16 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1121, 690);
+            this.tabPage2.Size = new System.Drawing.Size(1106, 503);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Matadata File Search";
+            this.tabPage2.Text = "Matadata Search";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // statusLbl
             // 
             this.statusLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.statusLbl.AutoSize = true;
-            this.statusLbl.Location = new System.Drawing.Point(3, 674);
+            this.statusLbl.Location = new System.Drawing.Point(3, 487);
             this.statusLbl.Name = "statusLbl";
             this.statusLbl.Padding = new System.Windows.Forms.Padding(12, 0, 0, 0);
             this.statusLbl.Size = new System.Drawing.Size(213, 13);
@@ -121,8 +129,10 @@
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.orRdi);
             this.groupBox1.Controls.Add(this.andRdi);
-            this.groupBox1.Location = new System.Drawing.Point(690, 0);
+            this.groupBox1.Location = new System.Drawing.Point(894, 0);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(0);
             this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 3, 3);
             this.groupBox1.Size = new System.Drawing.Size(107, 53);
             this.groupBox1.TabIndex = 19;
             this.groupBox1.TabStop = false;
@@ -130,7 +140,7 @@
             // orRdi
             // 
             this.orRdi.AutoSize = true;
-            this.orRdi.Location = new System.Drawing.Point(59, 19);
+            this.orRdi.Location = new System.Drawing.Point(60, 19);
             this.orRdi.Name = "orRdi";
             this.orRdi.Size = new System.Drawing.Size(41, 17);
             this.orRdi.TabIndex = 1;
@@ -141,7 +151,7 @@
             // 
             this.andRdi.AutoSize = true;
             this.andRdi.Checked = true;
-            this.andRdi.Location = new System.Drawing.Point(9, 19);
+            this.andRdi.Location = new System.Drawing.Point(10, 19);
             this.andRdi.Name = "andRdi";
             this.andRdi.Size = new System.Drawing.Size(48, 17);
             this.andRdi.TabIndex = 0;
@@ -157,18 +167,19 @@
             this.fileLst.FormattingEnabled = true;
             this.fileLst.Location = new System.Drawing.Point(17, 59);
             this.fileLst.Name = "fileLst";
-            this.fileLst.Size = new System.Drawing.Size(1087, 615);
+            this.fileLst.Size = new System.Drawing.Size(1072, 420);
             this.fileLst.TabIndex = 18;
             this.fileLst.DoubleClick += new System.EventHandler(this.fileLst_DoubleClick);
             // 
             // searchBtn
             // 
             this.searchBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.searchBtn.Location = new System.Drawing.Point(966, 29);
+            this.searchBtn.Location = new System.Drawing.Point(1010, 29);
             this.searchBtn.Name = "searchBtn";
-            this.searchBtn.Size = new System.Drawing.Size(138, 23);
+            this.searchBtn.Size = new System.Drawing.Size(79, 23);
             this.searchBtn.TabIndex = 17;
-            this.searchBtn.Text = "Search Database";
+            this.searchBtn.Text = "Fetch";
+            this.myToolTip1.SetToolTip(this.searchBtn, "Search the metadata database and display the result.");
             this.searchBtn.UseVisualStyleBackColor = true;
             this.searchBtn.Click += new System.EventHandler(this.searchBtn_Click);
             // 
@@ -178,8 +189,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.vFilter2Txt.Location = new System.Drawing.Point(549, 32);
             this.vFilter2Txt.Name = "vFilter2Txt";
-            this.vFilter2Txt.Size = new System.Drawing.Size(135, 20);
+            this.vFilter2Txt.Size = new System.Drawing.Size(342, 20);
             this.vFilter2Txt.TabIndex = 15;
+            this.myToolTip1.SetToolTip(this.vFilter2Txt, "If no filter is entered, all files with the selected metadata field will be fetec" +
+        "hed.");
             this.vFilter2Txt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.vFilter2Txt_KeyPress);
             // 
             // label4
@@ -199,6 +212,8 @@
             this.field2Cbo.Name = "field2Cbo";
             this.field2Cbo.Size = new System.Drawing.Size(220, 21);
             this.field2Cbo.TabIndex = 13;
+            this.myToolTip1.SetToolTip(this.field2Cbo, "If no field is selected, the selection filter will be searched for in all metadat" +
+        "a fields.");
             this.field2Cbo.Enter += new System.EventHandler(this.field2Cbo_Enter);
             this.field2Cbo.Leave += new System.EventHandler(this.field2Cbo_Leave);
             // 
@@ -235,8 +250,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.vFilter1Txt.Location = new System.Drawing.Point(549, 5);
             this.vFilter1Txt.Name = "vFilter1Txt";
-            this.vFilter1Txt.Size = new System.Drawing.Size(135, 20);
+            this.vFilter1Txt.Size = new System.Drawing.Size(342, 20);
             this.vFilter1Txt.TabIndex = 9;
+            this.myToolTip1.SetToolTip(this.vFilter1Txt, "If no filter is entered, all files with the selected metadata field will be fetec" +
+        "hed.");
             this.vFilter1Txt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.vFilter1Txt_KeyPress);
             // 
             // label3
@@ -256,6 +273,8 @@
             this.field1Cbo.Name = "field1Cbo";
             this.field1Cbo.Size = new System.Drawing.Size(220, 21);
             this.field1Cbo.TabIndex = 7;
+            this.myToolTip1.SetToolTip(this.field1Cbo, "If no field is selected, the selection filter will be searched for in all metadat" +
+        "a fields.");
             this.field1Cbo.Enter += new System.EventHandler(this.field1Cbo_Enter);
             this.field1Cbo.Leave += new System.EventHandler(this.field1Cbo_Leave);
             // 
@@ -295,9 +314,9 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1121, 690);
+            this.tabPage1.Size = new System.Drawing.Size(1106, 503);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Metadata Field/Value List";
+            this.tabPage1.Text = "Metadata Field/Value Summary";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // displayBtn
@@ -337,7 +356,7 @@
             this.columnHeader2});
             this.valueLtv.Location = new System.Drawing.Point(12, 29);
             this.valueLtv.Name = "valueLtv";
-            this.valueLtv.Size = new System.Drawing.Size(1093, 655);
+            this.valueLtv.Size = new System.Drawing.Size(1077, 468);
             this.valueLtv.TabIndex = 0;
             this.valueLtv.UseCompatibleStateImageBehavior = false;
             this.valueLtv.View = System.Windows.Forms.View.Details;
@@ -352,10 +371,74 @@
             this.columnHeader2.Text = "Value List";
             this.columnHeader2.Width = 7110;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.fileSmryLbl);
+            this.tabPage3.Controls.Add(this.fileSmryLst);
+            this.tabPage3.Controls.Add(this.fileSumrySetBtn);
+            this.tabPage3.Controls.Add(this.label6);
+            this.tabPage3.Controls.Add(this.fileSumryTxt);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(1106, 503);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "File Summary";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // fileSmryLbl
+            // 
+            this.fileSmryLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.fileSmryLbl.AutoSize = true;
+            this.fileSmryLbl.Location = new System.Drawing.Point(12, 484);
+            this.fileSmryLbl.Name = "fileSmryLbl";
+            this.fileSmryLbl.Size = new System.Drawing.Size(201, 13);
+            this.fileSmryLbl.TabIndex = 21;
+            this.fileSmryLbl.Text = "Double click on a file to see its metadata.";
+            // 
+            // fileSmryLst
+            // 
+            this.fileSmryLst.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileSmryLst.FormattingEnabled = true;
+            this.fileSmryLst.HorizontalScrollbar = true;
+            this.fileSmryLst.Location = new System.Drawing.Point(15, 22);
+            this.fileSmryLst.Name = "fileSmryLst";
+            this.fileSmryLst.Size = new System.Drawing.Size(1076, 459);
+            this.fileSmryLst.TabIndex = 7;
+            this.fileSmryLst.DoubleClick += new System.EventHandler(this.fileSmryLst_DoubleClick);
+            // 
+            // fileSumrySetBtn
+            // 
+            this.fileSumrySetBtn.Location = new System.Drawing.Point(308, 1);
+            this.fileSumrySetBtn.Name = "fileSumrySetBtn";
+            this.fileSumrySetBtn.Size = new System.Drawing.Size(56, 23);
+            this.fileSumrySetBtn.TabIndex = 6;
+            this.fileSumrySetBtn.Text = "Set List";
+            this.fileSumrySetBtn.UseVisualStyleBackColor = true;
+            this.fileSumrySetBtn.Click += new System.EventHandler(this.fileSumrySetBtn_Click);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 6);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(70, 13);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "File List Filter:";
+            // 
+            // fileSumryTxt
+            // 
+            this.fileSumryTxt.Location = new System.Drawing.Point(94, 3);
+            this.fileSumryTxt.Name = "fileSumryTxt";
+            this.fileSumryTxt.Size = new System.Drawing.Size(198, 20);
+            this.fileSumryTxt.TabIndex = 4;
+            this.fileSumryTxt.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.fileSumryTxt_KeyPress);
+            // 
             // closeBtn
             // 
             this.closeBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.closeBtn.Location = new System.Drawing.Point(1066, 734);
+            this.closeBtn.Location = new System.Drawing.Point(1051, 547);
             this.closeBtn.Name = "closeBtn";
             this.closeBtn.Size = new System.Drawing.Size(75, 23);
             this.closeBtn.TabIndex = 1;
@@ -372,13 +455,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1153, 758);
+            this.ClientSize = new System.Drawing.Size(1138, 571);
             this.Controls.Add(this.closeBtn);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form3";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Department of Conservation - Metadata Search";
+            this.Text = "Department of Conservation - Metadata Analyzer";
             this.tabControl1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
@@ -386,6 +469,8 @@
             this.groupBox1.PerformLayout();
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -422,5 +507,11 @@
         private System.Windows.Forms.Label statusLbl;
         private System.Windows.Forms.Timer myTimer1;
         private System.Windows.Forms.ToolTip myToolTip1;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.ListBox fileSmryLst;
+        private System.Windows.Forms.Button fileSumrySetBtn;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox fileSumryTxt;
+        private System.Windows.Forms.Label fileSmryLbl;
     }
 }

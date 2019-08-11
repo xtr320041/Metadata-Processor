@@ -25,13 +25,25 @@ namespace mediaFileProcessor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=WIN-DUULHMRSRIN;Initial Catalog=MediaFileDB;Integrated Security=SSPI")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=devsql6;Initial Catalog=DMmetadata;Integrated Security=SSPI")]
         public string dbString {
             get {
                 return ((string)(this["dbString"]));
             }
             set {
                 this["dbString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=WIN-DUULHMRSRIN;Initial Catalog=MediafileDB;Integrated Security=SSPI")]
+        public string dbStringDebug {
+            get {
+                return ((string)(this["dbStringDebug"]));
+            }
+            set {
+                this["dbStringDebug"] = value;
             }
         }
     }

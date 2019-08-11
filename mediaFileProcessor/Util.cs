@@ -171,5 +171,14 @@ namespace mediaFileProcessor
                 sw.WriteLine(dt.ToShortDateString() + " " + dt.ToLongTimeString() + " " + msg);
             }
         }
+
+        public static string GetDBcnn()
+        {
+            string cnn = mediaFileProcessor.Properties.Settings.Default.dbString;
+            #if DEBUG
+                        cnn = mediaFileProcessor.Properties.Settings.Default.dbStringDebug;
+            #endif
+            return cnn;
+        }
     }
 }

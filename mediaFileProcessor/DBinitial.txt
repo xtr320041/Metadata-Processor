@@ -1,0 +1,350 @@
+﻿
+Create FUNCTION [dbo].[getMetaId] 
+(
+	-- Add the parameters for the function here
+	@id int
+)
+RETURNS int
+AS
+BEGIN
+	Declare @metaId int;
+	declare @c int;
+	set @c = 1 
+	set @metaId = (select v1.metaId from [dbo].[_ValueCollection] v1 where v1.id = (@id - @c))
+	while @metaId <= 1
+	begin
+		set @c = @c + 1
+		if @c > 500
+			break;
+		set @metaId = (select v1.metaId from [dbo].[_ValueCollection] v1 where v1.id = (@id - @c))
+	end
+		
+	return @metaId;
+
+END
+GO
+/****** Object:  UserDefinedFunction [dbo].[getValueList]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date, ,>
+-- Description:	<Description, ,>
+-- =============================================
+CREATE FUNCTION [dbo].[getValueList] 
+(
+	-- Add the parameters for the function here
+	@keyName nvarchar(200)
+)
+RETURNS nvarchar(max)
+AS
+BEGIN
+	Declare @val nvarchar(MAX); 
+	Select @val = COALESCE(@val + ', ' + MetaValue, MetaValue) 
+        From _ValueList
+		where KeyName = @KeyName
+		order by [Count] desc
+		
+	return @val;
+
+END
+GO
+/****** Object:  UserDefinedFunction [dbo].[tvf_SplitByDelimiter]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create FUNCTION [dbo].[tvf_SplitByDelimiter]
+(
+	@List		varchar(max), 
+	@Delimiter	varchar(100) 
+)
+RETURNS @Array TABLE 
+(
+	ID			smallint	IDENTITY(1,1),	--Array index     
+	[Value]		varchar(1000)				--Array element contents    
+)
+AS
+BEGIN
+	DECLARE @Index		smallint     
+	DECLARE @Start		smallint     
+	DECLARE @DelSize	smallint 
+    
+	SET @DelSize = LEN(@Delimiter)    
+
+--loop through source string and add elements to destination table array     
+	WHILE LEN(@List) > 0     
+	BEGIN         
+		SET @Index = CHARINDEX(@Delimiter, @List)         
+		IF @Index = 0         
+		BEGIN                 
+			INSERT INTO @Array VALUES(@List)
+	        BREAK         
+		END         
+		ELSE         
+		BEGIN                 
+			INSERT INTO @Array VALUES(SUBSTRING(@List, 1, @Index - 1))
+            SET @Start = @Index + @DelSize                 
+			SET @List = SUBSTRING(@List, @Start , LEN(@List) - @Start + 1)         
+		END     
+	END     
+RETURN END
+GO
+/****** Object:  UserDefinedFunction [dbo].[tvf_SplitByDelimiter2]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+create FUNCTION [dbo].[tvf_SplitByDelimiter2]
+(
+	@List		varchar(max), 
+	@Delimiter1	nvarchar(100), 
+	@Delimiter2	nvarchar(100) 
+)
+RETURNS @Array TABLE 
+(
+	ID			smallint	IDENTITY(1,1),	--Array index     
+	[Value1]		nvarchar(1000),			--Array element contents    
+	[Value2]		nvarchar(3000)	
+)
+AS
+BEGIN
+	DECLARE @Index		smallint     
+	DECLARE @Index2		smallint     
+	DECLARE @Start		smallint     
+	DECLARE @DelSize	smallint 
+	DECLARE @DelSize2	smallint 
+	declare @line		nvarchar(4000)
+    
+	SET @DelSize = LEN(@Delimiter1)    
+	SET @DelSize2 = LEN(@Delimiter2)    
+
+--loop through source string and add elements to destination table array     
+	WHILE LEN(@List) > 0     
+	BEGIN         
+		SET @Index = CHARINDEX(@Delimiter1, @List)         
+		IF @Index = 0         
+		BEGIN                 
+			set @line = @list
+			--INSERT INTO @Array VALUES(@List)
+			SET @Index2 = CHARINDEX(@Delimiter2, @line) 
+			insert into @Array values(SUBSTRING(@line, 1, @Index2 - 1), SUBSTRING(@line, @Index2 + @DelSize2, LEN(@line)))
+	        BREAK         
+		END         
+		ELSE         
+		BEGIN                 
+			set @line = SUBSTRING(@List, 1, @Index - 1)
+			--INSERT INTO @Array VALUES(SUBSTRING(@List, 1, @Index - 1))
+			SET @Index2 = CHARINDEX(@Delimiter2, @line) 
+			insert into @Array values(SUBSTRING(@line, 1, @Index2 - 1), SUBSTRING(@line, @Index2 + @DelSize2, LEN(@line)))
+
+            SET @Start = @Index + @DelSize                 
+			SET @List = SUBSTRING(@List, @Start , LEN(@List) - @Start + 1)  
+					       
+		END     
+	END     
+RETURN END
+GO
+/****** Object:  Table [dbo].[_MetaCollection]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[_MetaCollection](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[FilePath] [nvarchar](400) NOT NULL,
+	[MetaData] [nvarchar](max) NULL,
+ CONSTRAINT [PK__MetaCollection] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[_ValueCollection]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[_ValueCollection](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[KeyName] [nvarchar](200) NOT NULL,
+	[MetaValue] [nvarchar](3000) NULL,
+	[metaId] [int] NULL,
+ CONSTRAINT [PK__ValueCollection] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[_ValueCount]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[_ValueCount](
+	[KeyName] [nvarchar](200) NOT NULL,
+	[Count] [int] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[_ValueList]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[_ValueList](
+	[KeyName] [nvarchar](200) NOT NULL,
+	[Metavalue] [nvarchar](3000) NULL,
+	[Count] [int] NULL
+) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [ClusteredIndex-20190804-201630]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+CREATE CLUSTERED INDEX [ClusteredIndex-20190804-201630] ON [dbo].[_ValueList]
+(
+	[KeyName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[_ValueListSummary]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[_ValueListSummary](
+	[KeyName] [nvarchar](200) NOT NULL,
+	[ValueList] [nvarchar](max) NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+/****** Object:  Index [NonClusteredIndex-20190802-155440]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+CREATE UNIQUE NONCLUSTERED INDEX [NonClusteredIndex-20190802-155440] ON [dbo].[_MetaCollection]
+(
+	[FilePath] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [NonClusteredIndex-keyCollection]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+CREATE NONCLUSTERED INDEX [NonClusteredIndex-keyCollection] ON [dbo].[_ValueCollection]
+(
+	[KeyName] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+GO
+/****** Object:  StoredProcedure [dbo].[_getMetadataSample]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[_getMetadataSample] 
+
+AS
+BEGIN
+ select top 20000 FilePath, MetaData from [dbo].[_MetaCollection] where MetaData <> ''
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_meta_delete]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[_meta_delete]
+	-- Add the parameters for the stored procedure here
+	@file nvarchar(400)
+AS
+BEGIN
+	if exists (select * from dbo._MetaCollection where FilePath = @file)
+	begin
+		declare @metaId int
+		set @metaId = (select Id from dbo._MetaCollection where FilePath = @file)
+		delete from [dbo].[_ValueCollection] where [metaId] = @metaId
+		delete from [dbo].[_MetaCollection] where Id = @metaId
+	end
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_meta_insert]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[_meta_insert]
+	@file nvarchar(400), 
+	@metaData nvarchar(max),
+	@metaData2 nvarchar(max)
+AS
+BEGIN
+	declare @metaId int
+	if exists (select * from dbo._MetaCollection where FilePath = @file)
+	begin
+		set @metaId = (select Id from dbo._MetaCollection where FilePath = @file)
+		delete from [dbo].[_ValueCollection] where [metaId] = @metaId
+		delete from [dbo].[_MetaCollection] where Id = @metaId
+	end
+	insert into dbo._MetaCollection (FilePath, MetaData) values (@file, @metaData)		
+	set @metaId = SCOPE_IDENTITY()
+	insert into [dbo].[_ValueCollection] (KeyName, metaValue, metaId)
+	select value1, value2, @metaId from [dbo].[tvf_SplitByDelimiter2](@metaData2,'||', '|')
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_MetaSearch]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[_MetaSearch]
+	-- Add the parameters for the stored procedure here
+	@key1 nvarchar(200), 
+	@value1 nvarchar(500),
+	@key2 nvarchar(200), 
+	@value2 nvarchar(500),
+	@andOr varchar(5)
+AS
+BEGIN
+	set @value1 = '%' + @value1 + '%'
+	set @value2 = '%' + @value2 + '%'
+	--if @key2 = ''
+	--begin		
+	--	select distinct m1.* from [dbo].[_ValueCollection] v1 join [dbo].[_MetaCollection] m1 on v1.metaId = m1.id and (v1.KEYNAME = @key1 or @key1 = '') and v1.MetaValue like @value1  order by 2
+	--end
+	--else
+	--begin
+		if @andOr = 'and'
+		begin
+			select distinct m1.* from [dbo].[_MetaCollection] m1 where exists (select * from  [dbo].[_ValueCollection] v1 where (v1.KEYNAME = @key1 or @key1 = '') and v1.MetaValue like @value1 and v1.metaId = m1.Id)
+				and exists (select * from  [dbo].[_ValueCollection] v2 where (v2.KEYNAME = @key2 or @key2 = '') and v2.MetaValue like @value2  and v2.metaId = m1.Id)			
+			order by 2
+		end
+		else
+		begin
+			select distinct m1.* from [dbo].[_MetaCollection] m1 where exists (select * from  [dbo].[_ValueCollection] v1 where (v1.KEYNAME = @key1 or @key1 = '') and v1.MetaValue like @value1 and v1.metaId = m1.Id)
+				or exists (select * from  [dbo].[_ValueCollection] v2 where (v2.KEYNAME = @key2 or @key2 = '') and v2.MetaValue like @value2  and v2.metaId = m1.Id)			
+			order by 2
+		end
+	--end
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_value_insert]    Script Date: 9/08/2019 11:27:27 a.m. ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[_value_insert]
+	@metaId int, 
+	@key nvarchar(200), 
+	@value nvarchar(3000)
+AS
+BEGIN
+	insert into dbo._ValueCollection (KeyName, MetaValue, metaId) values (@key, @value, @metaId)
+END
+GO
+
