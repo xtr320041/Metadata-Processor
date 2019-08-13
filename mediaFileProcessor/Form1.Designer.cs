@@ -53,7 +53,7 @@
             this.startBtn.Size = new System.Drawing.Size(50, 23);
             this.startBtn.TabIndex = 2;
             this.startBtn.Text = "Display";
-            this.myToolTip.SetToolTip(this.startBtn, "Display files in the selected folder.");
+            this.myToolTip.SetToolTip(this.startBtn, "Display files in the selected folder and all sub folders.");
             this.startBtn.UseVisualStyleBackColor = true;
             this.startBtn.Click += new System.EventHandler(this.button1_Click);
             // 
